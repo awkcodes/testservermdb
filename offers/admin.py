@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import Offer,  Location, Category, Subcategory, Pictures
+from .models import Offer,  Location, Category, Subcategory, Pictures, OfferDate
 
+admin.site.register(OfferDate)
 admin.site.register(Offer)
 admin.site.register(Location)
 admin.site.register(Category)

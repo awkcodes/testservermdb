@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
-from companies.models import Company
+from companies.models import Company, Location
+
 
 class Category(models.Model):
     name = models.CharField(max_length=50)
@@ -27,13 +28,6 @@ class Subcategory(models.Model):
         return self.name
 
 
-class Location(models.Model):
-    name = models.CharField(max_length=70)
-
-    def __str__(self):
-        return self.name
-
-
 class Offer(models.Model):
     title = models.CharField(max_length=250)
     coupons = models.PositiveIntegerField()
@@ -53,7 +47,7 @@ class Offer(models.Model):
     old_price = models.FloatField()
     new_price = models.FloatField()
 
-    location = models.ForeignKey('Location', on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
     # make this a list maybe we need category
     category = models.ManyToManyField(Category)

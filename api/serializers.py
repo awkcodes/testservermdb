@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from offers.models import (Offer, OfferDate,
                            Category, Subcategory,
-                           Location, Pictures)
-from companies.models import Company
+                            Pictures)
+from companies.models import Location, Company
 from orders.models import Order
 from registration.models import AdditionalUserInfo
 

@@ -1,12 +1,350 @@
 apis :
 ---------
 
-General :
-----------
-/api/getalloffers/
-/api/getvipoffers/
-/api/normaloffers
-/api/
-/api/
-/api/
-/api/
+registration :
+==============
+/api/registration/register/
+---------------------------
+    = restrictions
+        - username : must be 150 characters or fewer. Letters, digits and @/./+/-/_ only.
+        - strong password 
+        - success passowrd confirm
+
+{
+    "password": "",
+    "username": "",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "password_confirm": ""
+}
+
+Example : 
+---------
+posting this :
+{
+    "password": "donotpass99221",
+    "username": "abdalla3",
+    "first_name": "abdallah",
+    "last_name": "khalaf",
+    "email": "mainmail@awk.com",
+    "password_confirm": "donotpass99221"
+}
+returns this : 
+{
+    "id": 2,
+    "username": "abdalla3",
+    "first_name": "abdallah",
+    "last_name": "khalaf",
+    "email": "mainmail@awk.com"
+}
+this means that the account is created successfully and these are the informations of it .
+
+----------------------------------
+========================================
+api/registration/accounts/login/
+----------------------------------------
+so after registration user log in to their accounts using this api:
+{
+    "login": "abdalla3",
+    "password": "donotpass99221"
+}
+returns :
+{
+    "detail": "Login successful"
+}
+
+so u can use detail to display after login and to mark a success login from a broken one .
+---------------------------------------------
+=============================================
+api/registration/accounts/logout/
+---------------------------------------------
+Logs out the user. returns an error if the user is not
+authenticated
+
+we enter only one field , so:
+{
+    "revoke_token": false
+}
+returns :
+{
+    "detail": "Logout successful"
+}
+---------------------------------------------
+=============================================
+api/registration/accounts/profile/
+---------------------------------------------
+to get user main info from registration 
+u should be loged in to get profile otherwise u will get :
+{
+    "detail": "Authentication credentials were not provided."
+}
+in case u are loged in u get :
+{
+    "id": 2,
+    "username": "abdalla3",
+    "first_name": "abdallah",
+    "last_name": "khalaf",
+    "email": "mainmail@awk.com"
+}
+------------------------------------------------
+==============================================
+api/registration/accounts/change-password/
+---------------------------------------------
+to change password of user logged in :
+{
+    "old_password": "donotpass99221",
+    "password": "nowupass123",
+    "password_confirm": "nowupass123"
+}
+returns:
+{
+    "detail": "Password changed successfully"
+}
+----------------------------------------------
+==============================================
+api/createlocation/
+----------------------------------------------
+you must be logged in as admin to create location
+by :
+{
+"name": "Aarsal"
+}
+you will get on success : 
+{
+    "id": 1,
+    "name": "Aarsal"
+}
+this id will be used later / there is a get api bitch.
+all u need to pass is the name as admin
+-----------------------------------------------------
+=====================================================
+api/createcategory/
+-----------------------------------------------------
+also u need to be logged in as admin to create a category
+by : 
+{
+    "name": "categoraaay"
+}
+also just the name of it and u'l get on success:
+{
+    "id": 1,
+    "name": "categoraaay"
+}
+-------------------------------------------------------
+========================================================
+api/createsubcategory/
+------------------------------------------------------
+i told u we need the id before right ? 
+there we are , also u need to be admin
+{
+"parent_category": 1,
+"name": "subofteh"
+}
+parent is the id of the category it belongs to
+--------------------------------------------------------
+=======================================================
+api/createcompany/
+-----------------------------------------------
+as usual admin only creates companies
+{
+"name": "mycorpomany",
+"review": 5,
+"location":1
+}
+returns:
+{
+    "id": 1,
+    "name": "mycorpomany",
+    "review": 5.0,
+    "reviews_count": 0,
+    "location": 1
+}
+===============================================
+api/createoffer/
+----------------------------------------------
+u need to be logged in as admin to access this api
+this one is complicated so it is advisable to go to /admin log in as admin
+and do offers from there anyway if u want to make it from react
+transform this code from python to js (idk how)
+import requests
+
+url = 'http://example.com/api/offers/'
+
+data = {
+    'title': '50% off on all pizzas',
+    'coupons': 100,
+    'description': 'Get 50% off on all pizzas. Offer valid for a limited time only.',
+    'working': True,
+    'highlights': '50% off on all pizzas',
+    'old_price': 20.0,
+    'new_price': 10.0,
+    'isVip': False,
+    'is_unique': True,
+    'company': 1,
+    'location': 1,
+    'category': [1, 2],
+    'sub': [1, 2],
+}
+
+files = {
+    'main_picture': ('pizza.jpg', open('pizza.jpg', 'rb'), 'image/jpeg')
+}
+
+response = requests.post(url, data=data, files=files)
+
+------------------------------------------------------------------------
+=======================================================================
+api/createofferdate/
+-----------------------------------------------------------------------
+same with createofferdate /admin is easier anyway u need to link to the offer with timestamps:
+{
+    "startdate": "2023-03-01T09:00:00Z",
+    "enddate": "2023-03-31T23:59:59Z",
+    "offer_id": 1
+}
+and it should return :
+{
+    "id": 2,
+    "startdate": "2023-03-01T09:00:00Z",
+    "enddate": "2023-03-31T23:59:59Z",
+    "offer_id": 1
+}
+-----------------------------------------------------------------------
+====================================================================
+api/getalloffers/
+-----------------------------------------------------------------
+to get all offers together :
+will get something like :
+[
+    {
+        "id": 1,
+        "title": "datqawe",
+        "coupons": 13,
+        "working": true,
+        "main_picture": "/images/offerspics/%3Cbuilt-in%20function%20id%3E/wolfOfWallStreet763.430.png",
+        "highlights": "adgfasdfga",
+        "description": "sdgfasdfasdfasdfazxv",
+        "old_price": 11.0,
+        "new_price": 4.0,
+        "isVip": false,
+        "is_unique": true,
+        "company": 1,
+        "location": 1,
+        "category": [
+            1
+        ],
+        "sub": [
+            1
+        ]
+    },
+    {
+        "id": 2,
+        "title": "hhhhhhh",
+        "coupons": 22,
+        "working": true,
+        "main_picture": "/images/offerspics/%3Cbuilt-in%20function%20id%3E/yellowpaper.jpg",
+        "highlights": "jjjjjjjjjj",
+        "description": "ouyrtdctyxdruyteuy6rbifouytvf6uvt6robu7ytng",
+        "old_price": 4.0,
+        "new_price": 2.0,
+        "isVip": true,
+        "is_unique": false,
+        "company": 1,
+        "location": 1,
+        "category": [
+            1
+        ],
+        "sub": [
+            1
+        ]
+    }
+]
+---------------------------------------------------
+===================================================
+api/getvipoffers/
+------------------------------------------------
+returns: 
+[
+    {
+        "id": 2,
+        "title": "hhhhhhh",
+        "coupons": 22,
+        "working": true,
+        "main_picture": "/images/offerspics/%3Cbuilt-in%20function%20id%3E/yellowpaper.jpg",
+        "highlights": "jjjjjjjjjj",
+        "description": "ouyrtdctyxdruyteuy6rbifouytvf6uvt6robu7ytng",
+        "old_price": 4.0,
+        "new_price": 2.0,
+        "isVip": true,
+        "is_unique": false,
+        "company": 1,
+        "location": 1,
+        "category": [
+            1
+        ],
+        "sub": [
+            1
+        ]
+    }
+]
+-----------------------------------------------------
+u get it right? it's the same for these:
+    api/getnormaloffers/
+    api/getcategories/ 
+    api/getcompanies/ 
+    api/getsubcategories/ 
+    api/getlocations/ 
+-----------------------------------------------------
+=====================================================
+api/createorder/
+-----------------------------------
+to create order normally u need to be logged in as user
+and make post to ;
+{
+"user_id": 2,
+"offer_id" : 1,
+"coupons_ordered": 1
+}
+if order is unique u will get this error on order creation
+{
+    "message": "u can't take multiple coupons of this order"
+}
+on success u will get :
+{
+    "id": 1,
+    "redeemed": false,
+    "coupons_ordered": 1,
+    "order_date": "2023-02-24T10:22:46.047226Z",
+    "qr_code": null,
+    "is_gift": false,
+    "is_active": false,
+    "user_id": 2,
+    "offer_id": 1
+}
+------------------------------------------------------------
+==================================================
+api/activateorder/offerid:int
+--------------------------------------------------
+now we need to activate this order (we must be admin to use this api)
+if u make a get call to api/activateorder/1/ to activate the previous 
+order u will get as u are just a stupid user : 
+
+{
+    "message": "only admin can activate offers"
+}
+
+when u log in as admin u get :
+
+message offer acticated successfully
+---------------------------------------------------
+========================================
+api/makeuservip/<int:userid_to_change>/ 
+---------------------------------------
+TODO: still these ones 
+    api/giftoffer/
+    api/getuserprofile/ 
+    api/getuserorders/'
+    api/getusergifts/ 
+    api/ratecompany/<int:company_id>/<int:rate>/
+    api/searchoffers/<str:query>/

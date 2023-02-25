@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "offers",
+    "r_qrcode",
+    "orders",
     "companies",
     "rest_registration",
     "registration",

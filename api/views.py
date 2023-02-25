@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from registration.models import AdditionalUserInfo
 from rest_framework import status
+from django.utils import timezone
 from .serializers import (OffersSerializer, CompanySerializer,
                           CategorySerializer, SubcategorySerializer,
                           LocationSerializer, OfferDateSerializer,
@@ -173,14 +174,14 @@ def makeuserVip(request, userid_to_change):
 # ----------
 
 
-@login_required(login_url='/registration/accounts/login/')
+@login_required(login_url='/api/registration/accounts/login/')
 @api_view(['POST'])
 def createOrder(request):
     serializer = OrdersSerializer(data=request.data)
     if serializer.is_valid():
-        offer_id = request.data.offer_id
-        offer = Offer.objects.get(pk=offer_id)
-        if offer.is_unique and request.data.coupons_ordered > 1:
+        offer_id = request.data['offer_id']
+        offer = Offer.objects.get(id=offer_id)
+        if offer.is_unique and request.data["coupons_ordered"] > 1:
             return Response({"message": "u can't take multiple coupons of this order"}, status=status.HTTP_400_BAD_REQUEST)
         offer_dates = OfferDate.objects.filter(offer_id=offer_id)
         for offerdate in offer_dates:
@@ -189,7 +190,7 @@ def createOrder(request):
                 offer.working = False
                 offer.save()
             offer.working = True
-        offer.make_order(coupons_to_order=request.data.coupons_ordered)
+        offer.make_order(coupons_to_order=request.data["coupons_ordered"])
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -197,6 +198,7 @@ def createOrder(request):
 
 # redeem order
 
+@api_view(['GET'])
 def redeem_order(request, order_id):
     order = Order.objects.get(pk=order_id)
     if not order.redeemed:
@@ -206,17 +208,20 @@ def redeem_order(request, order_id):
 
 # activate_order
 
+@api_view(['GET'])
 def activate_order(request, id):
-    order = Order.objects.get(id=id)
-    if not order.is_active:
-        order.activate()
-    return Response({"message": 'Order activated successfuly'})
+    if request.user.is_superuser:
+        order = Order.objects.get(id=id)
+        if not order.is_active:
+            order.activate()
+        return Response({"message": 'Order activated successfuly'})
+    return Response({"message": "only admin can activate offers"})
 
 
 # get user info
 
 
-@login_required(login_url='/registration/accounts/login/')
+@login_required(login_url='/api/registration/accounts/login/')
 @api_view(['GET'])
 def getUserProfile(request):
     profile = AdditionalUserInfo.objects.get(user=request.user.id)
@@ -226,7 +231,7 @@ def getUserProfile(request):
 
 # get orders
 
-@login_required(login_url='/registration/accounts/login/')
+@login_required(login_url='/api/registration/accounts/login/')
 @api_view(['GET'])
 def getUserOrders(request):
     orders = Order.objects.filter(user_id=request.user.id)
@@ -236,7 +241,7 @@ def getUserOrders(request):
 
 # get gifts
 
-@login_required(login_url='/registration/accounts/login/')
+@login_required(login_url='/api/registration/accounts/login/')
 @api_view(['GET'])
 def getUserGifts(request):
     orders = Order.objects.filter(user_id=request.user.id, is_gift=True)
