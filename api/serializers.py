@@ -1,16 +1,8 @@
 from rest_framework import serializers
-from offers.models import (Offer, OfferDate,
-                           Category, Subcategory,
-                            Pictures)
+from offers.models import Offer, OfferDate, Category, Subcategory, Pictures
 from companies.models import Location, Company
 from orders.models import Order
 from registration.models import AdditionalUserInfo
-
-
-class OffersSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Offer
-        fields = "__all__"
 
 
 class OfferDateSerializer(serializers.ModelSerializer):
@@ -37,16 +29,42 @@ class CompanySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class SubcategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subcategory
+        fields = "__all__"
+
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = "__all__"
 
 
-class SubcategorySerializer(serializers.ModelSerializer):
+class OffersSerializer(serializers.ModelSerializer):
+    location = serializers.StringRelatedField()
+    company = serializers.StringRelatedField()
+    category = CategorySerializer(many=True)
+
     class Meta:
-        model = Subcategory
-        fields = "__all__"
+        model = Offer
+        fields = [
+            "id",
+            "title",
+            "coupons",
+            "company",
+            "description",
+            "highlights",
+            "isVip",
+            "is_unique",
+            "location",
+            "main_picture",
+            "new_price",
+            "old_price",
+            "category",
+            "working",
+            "sub",
+        ]
 
 
 class LocationSerializer(serializers.ModelSerializer):

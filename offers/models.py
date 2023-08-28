@@ -7,25 +7,27 @@ class Category(models.Model):
     name = models.CharField(max_length=50)
 
     class Meta:
-        verbose_name_plural = 'categories'
+        verbose_name_plural = "categories"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class Subcategory(models.Model):
     # sub had one category
-    parent_category = models.ForeignKey('Category',
-                                        on_delete=models.CASCADE
-                                        )
+    parent_category = models.ForeignKey(Category, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
 
     class Meta:
         # this goes for plural queryset name in db retrieving
-        verbose_name_plural = 'subcategories'
+        verbose_name_plural = "subcategories"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
+
+
+def offer_image_upload_path(instance, filename):
+    return f"images/offerspics/{instance.id}/{filename}"
 
 
 class Offer(models.Model):
@@ -35,7 +37,7 @@ class Offer(models.Model):
 
     # mark this as false to make the offer unsendable to the mainpage
     working = models.BooleanField(default=True)
-    main_picture = models.ImageField(upload_to=f'images/offerspics/{id}/')
+    main_picture = models.ImageField(upload_to=offer_image_upload_path)
 
     # small and detailed description for the offer
     highlights = models.CharField(max_length=300)
@@ -66,6 +68,7 @@ class Offer(models.Model):
     def __str__(self):
         return self.title
 
+
 # offer date is used by the views to determine if an offer is active or not
 class OfferDate(models.Model):
     offer_id = models.ForeignKey(Offer, on_delete=models.CASCADE)
@@ -76,4 +79,4 @@ class OfferDate(models.Model):
 # only created in internal offer creation
 class Pictures(models.Model):
     parent_offer = models.ForeignKey(Offer, on_delete=models.CASCADE)
-    inner_pic = models.ImageField(upload_to=f'offers/{parent_offer}/')
+    inner_pic = models.ImageField(upload_to=f"offers/{parent_offer}/")

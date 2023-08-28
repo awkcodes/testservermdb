@@ -2,11 +2,14 @@ from django.http import JsonResponse
 from django.http.response import Http404
 from django.shortcuts import render
 from rest_framework.decorators import api_view
+from rest_framework.generics import ListCreateAPIView
 from .models import Offer
 from rest_framework.response import Response
+from .serializers import OfferSerializer
 
 
 """
+
 class OfferAPIview(APIView):
     def get_offer(self, pk):
         try:
@@ -76,8 +79,15 @@ class OfferAPIview(APIView):
             })
 
 """
+
+
 def index(request):
     return Response("<h1>hello</h1>")
+
+
+class OfferAPIview(ListCreateAPIView):
+    queryset = Offer.objects.all()
+    serializer_class = OfferSerializer
 
 
 """
