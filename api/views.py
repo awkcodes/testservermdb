@@ -1,4 +1,12 @@
-from offers.models import Offer, OfferDate, Category, Subcategory, Location, Pictures
+from offers.models import (
+    Offer,
+    OfferDate,
+    Category,
+    Subcategory,
+    Location,
+    Pictures,
+    Feedbacks,
+)
 from orders.models import Order
 from registration.models import Preferences
 from companies.models import Company
@@ -6,10 +14,12 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from rest_framework.response import Response
+from rest_framework import generics, status
 from rest_framework.decorators import api_view
 from registration.models import AdditionalUserInfo
-from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 from .serializers import (
     OffersSerializer,
     CompanySerializer,
@@ -19,6 +29,8 @@ from .serializers import (
     OfferDateSerializer,
     OrdersSerializer,
     UserInfoSerializer,
+    SingleOfferSerializer,
+    FeedbackSerializer,
 )
 
 
@@ -27,6 +39,45 @@ def getOffers(request):
     products = Offer.objects.filter(working=True)
     serializer = OffersSerializer(products, many=True)
     return Response(serializer.data)
+
+
+class SingleOfferView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Offer.objects.all()
+    serializer_class = SingleOfferSerializer
+
+
+class FeedbackView(generics.ListCreateAPIView):
+    serializer_class = FeedbackSerializer
+
+    def get_queryset(self):
+        offer_id = self.kwargs["pk"]
+        return Feedbacks.objects.filter(offer_id=offer_id)
+
+    def list(self, request, *args, **kwargs):
+        feedbacks = self.get_queryset()
+
+        if not feedbacks.exists():
+            return Response(
+                {"message": "No feedbacks found for this offer."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        serializer = self.get_serializer(feedbacks, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def create(self, request, *args, **kwargs):
+        print(request.data)
+        offer_id = self.kwargs["pk"]
+        user_id = request.data["user_id"]  # Get the user's ID from authentication
+        request.data["offer_id"] = offer_id
+        request.data["user_id"] = user_id  # Add user_id to the feedback data
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["GET"])

@@ -9,6 +9,12 @@ urlpatterns = [
         include(("registration.urls", "registration"), namespace="registration"),
     ),
     path("getalloffers/", views.getOffers, name="all-offers"),
+    path("getalloffers/<int:pk>", views.SingleOfferView.as_view(), name="offer"),
+    path(
+        "getalloffers/<int:pk>/provide-feedback",
+        views.FeedbackView.as_view(),
+        name="feedback",
+    ),
     path("getvipoffers/", views.getVipOffers, name="vip-offers"),
     path("getnormaloffers/", views.getNormalOffers, name="normal-offers"),
     path("getcategories/", views.getCategories, name="categories"),
