@@ -86,11 +86,13 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class FeedbackSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserSerializer(read_only=True)
+    user_id = serializers.IntegerField(write_only=True)
+    offer_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Feedbacks
-        fields = "__all__"
+        fields = ["id", "user_id", "feedback_content", "offer_id", "user"]
 
 
 class SingleOfferSerializer(serializers.ModelSerializer):

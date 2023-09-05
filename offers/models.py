@@ -75,9 +75,6 @@ class Feedbacks(models.Model):
     offer = models.ForeignKey(Offer, on_delete=models.PROTECT, null=True)
     feedback_content = models.CharField(max_length=500, null=True, blank=True)
 
-    def __str__(self):
-        return self.user.username
-
 
 # offer date is used by the views to determine if an offer is active or not
 class OfferDate(models.Model):

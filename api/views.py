@@ -48,36 +48,20 @@ class SingleOfferView(generics.RetrieveUpdateDestroyAPIView):
 
 class FeedbackView(generics.ListCreateAPIView):
     serializer_class = FeedbackSerializer
+    queryset = Feedbacks.objects.all()
 
-    def get_queryset(self):
-        offer_id = self.kwargs["pk"]
-        return Feedbacks.objects.filter(offer_id=offer_id)
+    def get(self, request, pk):
+        feeds = Feedbacks.objects.filter().all()
+        serialized_item = FeedbackSerializer(feeds, many=True)
+        return Response(serialized_item.data, status=status.HTTP_200_OK)
 
-    def list(self, request, *args, **kwargs):
-        feedbacks = self.get_queryset()
-
-        if not feedbacks.exists():
-            return Response(
-                {"message": "No feedbacks found for this offer."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        serializer = self.get_serializer(feedbacks, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def create(self, request, *args, **kwargs):
+    def post(self, request, pk):
         print(request.data)
-        offer_id = self.kwargs["pk"]
-        user_id = request.data["user_id"]  # Get the user's ID from authentication
-        request.data["offer_id"] = offer_id
-        request.data["user_id"] = user_id  # Add user_id to the feedback data
-        serializer = self.get_serializer(data=request.data)
+        serialized_item = FeedbackSerializer(data=request.data)
+        serialized_item.is_valid(raise_exception=True)
+        serialized_item.save()
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serialized_item.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(["GET"])
