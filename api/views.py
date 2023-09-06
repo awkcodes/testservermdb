@@ -51,7 +51,10 @@ class FeedbackView(generics.ListCreateAPIView):
     queryset = Feedbacks.objects.all()
 
     def get(self, request, pk):
-        feeds = Feedbacks.objects.filter().all()
+        # select the related offer
+        offer = get_object_or_404(Offer, pk=pk)
+        # Get all feedbacks related to the offer
+        feeds = Feedbacks.objects.filter(offer_id=offer)
         serialized_item = FeedbackSerializer(feeds, many=True)
         return Response(serialized_item.data, status=status.HTTP_200_OK)
 
@@ -61,7 +64,7 @@ class FeedbackView(generics.ListCreateAPIView):
         serialized_item.is_valid(raise_exception=True)
         serialized_item.save()
 
-        return Response(serialized_item.data, status=status.HTTP_201_CREATED)
+        return Response(serialized_item.data, status.HTTP_201_CREATED)
 
 
 @api_view(["GET"])
