@@ -36,7 +36,7 @@ urlpatterns = [
     path(
         "makeuservip/<int:userid_to_change>/", views.makeuserVip, name="make user vip"
     ),
-    path("createorder/", views.createOrder, name="create order"),
+    path("createorder/", views.CreateOrderView.as_view(), name="create order"),
     path(
         "redeemorder/<int:order_id>/", views.redeem_order, name="qr code redeem order"
     ),
