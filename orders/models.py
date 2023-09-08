@@ -13,7 +13,7 @@ class Order(models.Model):
     redeemed = models.BooleanField(default=False)
     coupons_ordered = models.PositiveIntegerField()
     order_date = models.DateTimeField(auto_now_add=True)
-    qr_code = models.ImageField(upload_to='images/qr_codes/', null=True, blank=True)
+    qr_code = models.ImageField(upload_to="images/qr_codes/", null=True, blank=True)
     is_gift = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
 
@@ -42,13 +42,13 @@ class Order(models.Model):
         self.qr_code.save(, img, ContentFile(img.tobytes()))
 
         """
-        qr_image = qrcode.make(f'localhost:8000/redeemorder/{self.id}/')
-        qr_offset = Image.new('RGB', (410, 410), 'white')
+        qr_image = qrcode.make(f"localhost:8000/redeemorder/{self.id}/")
+        qr_offset = Image.new("RGB", (410, 410), "white")
         draw_img = ImageDraw.Draw(qr_offset)
         qr_offset.paste(qr_image)
-        file_name = f'{self.user_id}.{self.offer_id}.png'
+        file_name = f"{self.user_id}.{self.offer_id}.png"
         stream = BytesIO()
-        qr_offset.save(stream, 'PNG')
+        qr_offset.save(stream, "PNG")
         self.qr_code.save(file_name, File(stream), save=False)
         qr_offset.close()
         self.save()
