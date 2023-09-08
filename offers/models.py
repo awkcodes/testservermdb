@@ -4,24 +4,23 @@ from companies.models import Company, Location
 from django.contrib.auth.models import User
 
 
-class Category(models.Model):
-    name = models.CharField(max_length=50)
-
-    class Meta:
-        verbose_name_plural = "categories"
-
-    def __str__(self) -> str:
-        return self.name
-
-
 class Subcategory(models.Model):
-    # sub had one category
-    parent_category = models.ForeignKey(Category, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
 
     class Meta:
         # this goes for plural queryset name in db retrieving
         verbose_name_plural = "subcategories"
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=50)
+    Subcategories = models.ForeignKey(Subcategory, on_delete=models.CASCADE, null=True)
+
+    class Meta:
+        verbose_name_plural = "categories"
 
     def __str__(self) -> str:
         return self.name
@@ -63,7 +62,7 @@ class Offer(models.Model):
     sub = models.ManyToManyField(Subcategory)
 
     def make_order(self, coupons_to_order):
-        self.coupons -= coupons_to_order
+        self.coupons -= int(coupons_to_order)
         self.save()
 
     def __str__(self):

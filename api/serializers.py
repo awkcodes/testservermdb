@@ -49,9 +49,11 @@ class SubcategorySerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    Subcategories = SubcategorySerializer()
+
     class Meta:
         model = Category
-        fields = "__all__"
+        fields = ["id", "name", "Subcategories"]
 
 
 class LocationSerializer(serializers.ModelSerializer):

@@ -42,7 +42,9 @@ urlpatterns = [
     ),
     path("activateorder/<int:id>/", views.activate_order, name="activate order"),
     path("getuserprofile/", views.getUserProfile, name="get user profile"),
-    path("getuserorders/", views.getUserOrders, name="get personal orders"),
+    path(
+        "getuserorders/", views.getUserOrders, name="get personal orders"
+    ),  # body : user_id
     path("getusergifts/", views.getUserGifts, name="get user gifts"),
     path(
         "ratecompany/<int:company_id>/<int:rate>/",

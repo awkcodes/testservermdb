@@ -231,29 +231,29 @@ def makeuserVip(request, userid_to_change):
 # ----------
 
 
-# @login_required(login_url="/api/registration/accounts/login/")
-# @api_view(["POST"])
-# def createOrder(request):
-#     serializer = OrdersSerializer(data=request.data)
-#     if serializer.is_valid():
-#         offer_id = request.data["offer_id"]
-#         offer = Offer.objects.get(id=offer_id)
-#         if offer.is_unique and request.data["coupons_ordered"] > 1:
-#             return Response(
-#                 {"message": "u can't take multiple coupons of this order"},
-#                 status=status.HTTP_400_BAD_REQUEST,
-#             )
-#         offer_dates = OfferDate.objects.filter(offer_id=offer_id)
-#         for offerdate in offer_dates:
-#             offer_active = offerdate.startdate <= timezone.now() <= offerdate.enddate
-#             if not offer_active:
-#                 offer.working = False
-#                 offer.save()
-#             offer.working = True
-#         offer.make_order(coupons_to_order=request.data["coupons_ordered"])
-#         serializer.save()
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@login_required(login_url="/api/registration/accounts/login/")
+@api_view(["POST"])
+def createOrder(request):
+    serializer = OrdersSerializer(data=request.data)
+    if serializer.is_valid():
+        offer_id = request.data["offer_id"]
+        offer = Offer.objects.get(id=offer_id)
+        if offer.is_unique and request.data["coupons_ordered"] > 1:
+            return Response(
+                {"message": "u can't take multiple coupons of this order"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        offer_dates = OfferDate.objects.filter(offer_id=offer_id)
+        for offerdate in offer_dates:
+            offer_active = offerdate.startdate <= timezone.now() <= offerdate.enddate
+            if not offer_active:
+                offer.working = False
+                offer.save()
+            offer.working = True
+        offer.make_order(coupons_to_order=request.data["coupons_ordered"])
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @permission_classes([IsAuthenticated])
@@ -311,8 +311,6 @@ def activate_order(request, id):
 
 
 # get user info
-
-
 @login_required(login_url="/api/registration/accounts/login/")
 @api_view(["GET"])
 def getUserProfile(request):
